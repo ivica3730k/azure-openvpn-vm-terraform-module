@@ -1,0 +1,72 @@
+resource "azurerm_public_ip" "utils_machine_public_ip" {
+  name = "openvpn_machine_public_ip"
+  # location            = azurerm_resource_group.rg.location
+  location = var.resource_group_location
+  #resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_network_interface" "openvpn_machine_nic" {
+  name                = "openvpn_machine_nic"
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
+
+  ip_configuration {
+    name                          = "ipconfig1"
+    subnet_id                     = var.subnet_id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.utils_machine_public_ip.id
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "utils_virtual_machine" {
+  # TODO: OpenVPN should be installed on this machine and user profile should be created
+  admin_username                  = "azureuser"
+  allow_extension_operations      = "true"
+  computer_name                   = "openvpn-virtual-machine"
+  disable_password_authentication = "true"
+  encryption_at_host_enabled      = "false"
+  extensions_time_budget          = "PT1H30M"
+  location                        = var.resource_group_location
+  max_bid_price                   = "-1"
+  name                            = "openvpn_virtual_machine"
+  network_interface_ids           = [azurerm_network_interface.openvpn_machine_nic.id]
+  priority                        = "Regular"
+  provision_vm_agent              = "true"
+  resource_group_name             = var.resource_group_name
+  secure_boot_enabled             = "false"
+  size                            = "Standard_B1ls"
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
+
+  os_disk {
+    caching                   = "ReadWrite"
+    disk_size_gb              = "30"
+    storage_account_type      = "Premium_LRS"
+    write_accelerator_enabled = "false"
+  }
+
+  patch_mode = "ImageDefault"
+
+  plan {
+    name      = "ubuntu-minimal-20-04"
+    product   = "ubuntu-minimal-20-04"
+    publisher = "cloud-infrastructure-services"
+  }
+
+
+
+  source_image_reference {
+    offer     = "ubuntu-minimal-20-04"
+    publisher = "cloud-infrastructure-services"
+    sku       = "ubuntu-minimal-20-04"
+    version   = "latest"
+  }
+
+  vtpm_enabled = "false"
+}
