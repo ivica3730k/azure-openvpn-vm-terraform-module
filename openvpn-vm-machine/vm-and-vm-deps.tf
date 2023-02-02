@@ -21,7 +21,7 @@ resource "azurerm_network_interface" "openvpn_machine_nic" {
   }
 }
 
-resource "azurerm_linux_virtual_machine" "utils_virtual_machine" {
+resource "azurerm_linux_virtual_machine" "openvpn_virtual_machine" {
   # TODO: OpenVPN should be installed on this machine and user profile should be created
   admin_username                  = "azureuser"
   allow_extension_operations      = "true"
@@ -53,20 +53,25 @@ resource "azurerm_linux_virtual_machine" "utils_virtual_machine" {
 
   patch_mode = "ImageDefault"
 
-  plan {
-    name      = "ubuntu-minimal-20-04"
-    product   = "ubuntu-minimal-20-04"
-    publisher = "cloud-infrastructure-services"
-  }
 
 
 
   source_image_reference {
-    offer     = "ubuntu-minimal-20-04"
-    publisher = "cloud-infrastructure-services"
-    sku       = "ubuntu-minimal-20-04"
+    offer     = "0001-com-ubuntu-server-focal"
+    publisher = "Canonical"
+    sku       = "20_04-lts-gen2"
     version   = "latest"
   }
 
+
+
   vtpm_enabled = "false"
+  custom_data  = data.template_cloudinit_config.openvpn_virtual_machine_init.rendered
+
+}
+
+# output the public IP address of the VM
+output "openvpn_virtual_machine_public_ip" {
+  description = "IP address of the OpenVPN VM"
+  value       = azurerm_linux_virtual_machine.openvpn_virtual_machine.public_ip_address
 }
