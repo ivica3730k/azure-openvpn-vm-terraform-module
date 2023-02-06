@@ -57,4 +57,5 @@ module "openvpn-vm-machine" {
   resource_group_name     = azurerm_resource_group.rg.name
   resource_group_location = azurerm_resource_group.rg.location
   subnet_id               = azurerm_subnet.default-subnet.id
+  ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
 }

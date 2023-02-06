@@ -1,4 +1,4 @@
-resource "azurerm_public_ip" "utils_machine_public_ip" {
+resource "azurerm_public_ip" "openvpn_machine_public_ip" {
   name = "openvpn_machine_public_ip"
   # location            = azurerm_resource_group.rg.location
   location = var.resource_group_location
@@ -17,7 +17,7 @@ resource "azurerm_network_interface" "openvpn_machine_nic" {
     name                          = "ipconfig1"
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.utils_machine_public_ip.id
+    public_ip_address_id          = azurerm_public_ip.openvpn_machine_public_ip.id
   }
 }
 
@@ -68,6 +68,10 @@ resource "azurerm_linux_virtual_machine" "openvpn_virtual_machine" {
   vtpm_enabled = "false"
   custom_data  = data.template_cloudinit_config.openvpn_virtual_machine_init.rendered
 
+  depends_on = [
+    azurerm_storage_account.ovpn_profiles_storage_account,
+    azurerm_storage_container.ovpn_profiles_storage_container
+  ]
 }
 
 # output the public IP address of the VM

