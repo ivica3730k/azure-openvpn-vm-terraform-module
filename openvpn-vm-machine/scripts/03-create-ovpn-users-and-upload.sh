@@ -1,20 +1,7 @@
 #!/bin/bash
-
-# make a for loop from number 0 to 10
-
-# for each user in USER variable create a ovpn file
-
 %{ for u in users ~}
 MENU_OPTION="1" CLIENT="ovpn-${u}" PASS="1" ./openvpn-install.sh
 %{ endfor }
-
-# log storage_container_connection_string
-echo "storage_container_connection_string: ${storage_container_connection_string}"
-
-# log storage_container_name
-echo "storage_container_name: ${storage_container_name}"
-
-# get the home directory of the current user
 
 cat >upload_ovpn_files.py <<EOL
 import os
@@ -42,6 +29,5 @@ for filename in os.listdir("/root"):
             os.remove("/root/" + filename)
 EOL
 
-# Make the file executable
 chmod +x upload_ovpn_files.py
 python3 upload_ovpn_files.py

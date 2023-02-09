@@ -19,6 +19,12 @@ module "openvpn-vm-machine" {
   resource_group_location            = azurerm_resource_group.rg.location
   subnet_id                          = azurerm_subnet.default-subnet.id
   ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
+  users                              = ["ivicamatic-laptop", "ivicamatic-desktop", "ivicamatic-mobile"]
+}
+
+
+output "openvpn-machine-ip" {
+  value = module.openvpn-vm-machine.openvpn_virtual_machine_public_ip
 }
 
 

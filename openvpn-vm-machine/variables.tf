@@ -13,3 +13,7 @@ variable "subnet_id" {
 variable "ovpn_profiles_storage_account_name" {
 
 }
+
+variable "users" {
+
+}
