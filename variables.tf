@@ -1,6 +1,10 @@
-### Variables for resource group ###
+variable "environment" {
+  description = "The environment to deploy to"
+  default     = "dev"
+}
+
 variable "resource_group_name" {
-  default     = "ivicamaticrg" # this gets suffixed with the environment as it must be unique on whole Azure 
+  default     = "ivicamaticrg"
   description = "Details of the resource group"
   sensitive   = false
 }

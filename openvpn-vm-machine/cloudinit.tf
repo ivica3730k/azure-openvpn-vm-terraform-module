@@ -13,9 +13,14 @@ data "template_cloudinit_config" "openvpn_virtual_machine_init" {
   part {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/scripts/03-create-ovpn-users-and-upload.sh", {
-      storage_container_name              =  azurerm_storage_container.ovpn_profiles_storage_container.name
-      storage_container_connection_string =  azurerm_storage_account.ovpn_profiles_storage_account.primary_connection_string
+      storage_container_name              = azurerm_storage_container.ovpn_profiles_storage_container.name
+      storage_container_connection_string = azurerm_storage_account.ovpn_profiles_storage_account.primary_connection_string
+      users                               = ["user1", "user2", "user3"]
     })
+  }
+  part {
+    content_type = "text/x-shellscript"
+    content      = templatefile("${path.module}/scripts/04-fix-permisions-and-start.sh", {})
   }
 
 }

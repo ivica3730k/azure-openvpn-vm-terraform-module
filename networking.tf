@@ -13,23 +13,19 @@ resource "azurerm_subnet" "default-subnet" {
   address_prefixes     = ["10.0.0.0/16"]
 }
 
+module "openvpn-vm-machine" {
+  source                             = "./openvpn-vm-machine"
+  resource_group_name                = azurerm_resource_group.rg.name
+  resource_group_location            = azurerm_resource_group.rg.location
+  subnet_id                          = azurerm_subnet.default-subnet.id
+  ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
+}
+
 
 resource "azurerm_network_security_group" "default-security-group" {
   location            = azurerm_resource_group.rg.location
   name                = "default-security-group"
   resource_group_name = azurerm_resource_group.rg.name
-  security_rule {
-    access                     = "Allow"
-    description                = "Allow SSH"
-    destination_address_prefix = "*"
-    destination_port_range     = "22"
-    direction                  = "Inbound"
-    name                       = "AllowSSH"
-    priority                   = 100
-    protocol                   = "Tcp"
-    source_address_prefix      = "Internet"
-    source_port_range          = "*"
-  }
 
   security_rule {
     access                     = "Allow"
@@ -51,11 +47,3 @@ resource "azurerm_subnet_network_security_group_association" "default-subnet-sec
   network_security_group_id = azurerm_network_security_group.default-security-group.id
 }
 
-
-module "openvpn-vm-machine" {
-  source                  = "./openvpn-vm-machine"
-  resource_group_name     = azurerm_resource_group.rg.name
-  resource_group_location = azurerm_resource_group.rg.location
-  subnet_id               = azurerm_subnet.default-subnet.id
-  ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
-}

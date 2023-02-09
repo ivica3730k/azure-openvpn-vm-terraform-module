@@ -1,9 +1,3 @@
-# Configure the Azure provider
-
-variable "environment" {
-  description = "The environment to deploy to"
-  default     = "dev"
-}
 terraform {
   backend "local" {
     path = "terraform.tfstate"
