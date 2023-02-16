@@ -14,7 +14,7 @@ resource "azurerm_subnet" "default-subnet" {
 }
 
 module "openvpn-vm-machine" {
-  source                             = "./openvpn-vm-machine"
+  source                             = "./modules/openvpn-vm-machine"
   resource_group_name                = azurerm_resource_group.rg.name
   resource_group_location            = azurerm_resource_group.rg.location
   subnet_id                          = azurerm_subnet.default-subnet.id
@@ -41,6 +41,18 @@ resource "azurerm_network_security_group" "default-security-group" {
     name                       = "AllowTagCustom1194Inbound"
     priority                   = "101"
     protocol                   = "Udp"
+    source_address_prefix      = "Internet"
+    source_port_range          = "*"
+  }
+  # allow ssh
+  security_rule {
+    access                     = "Allow"
+    destination_address_prefix = "*"
+    destination_port_range     = "22"
+    direction                  = "Inbound"
+    name                       = "AllowTagCustom22Inbound"
+    priority                   = "102"
+    protocol                   = "Tcp"
     source_address_prefix      = "Internet"
     source_port_range          = "*"
   }

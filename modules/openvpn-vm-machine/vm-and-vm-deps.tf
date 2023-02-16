@@ -12,6 +12,7 @@ resource "azurerm_network_interface" "openvpn_machine_nic" {
   name                = "openvpn_machine_nic"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
+  # enable_accelerated_networking = "true"
 
   ip_configuration {
     name                          = "ipconfig1"
@@ -38,6 +39,7 @@ resource "azurerm_linux_virtual_machine" "openvpn_virtual_machine" {
   resource_group_name             = var.resource_group_name
   secure_boot_enabled             = "false"
   size                            = "Standard_B1ls"
+  # size                           = "Standard_F2s"
 
   admin_ssh_key {
     username   = "azureuser"
