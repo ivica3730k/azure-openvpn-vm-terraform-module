@@ -48,6 +48,15 @@ output "proxy-machine-ip" {
   value = module.reverse-proxy-machine.virtual_machine_public_ip
 }
 
+resource "cloudflare_record" "proxy_machine_a_record" {
+  zone_id = var.cloudflare_zone_id
+  name    = "test"
+  value   = module.reverse-proxy-machine.virtual_machine_public_ip
+  type    = "A"
+  ttl     = 1
+  proxied = true
+}
+
 
 
 

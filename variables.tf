@@ -15,3 +15,12 @@ variable "location" {
   description = "Details of the resource group"
   sensitive   = false
 }
+
+variable "cloudflare_api_token" {
+  default = ""
+}
+
+variable "cloudflare_zone_id" {
+  default = ""
+}
+  

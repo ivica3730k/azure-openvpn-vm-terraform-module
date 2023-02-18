@@ -4,8 +4,8 @@ resource "random_string" "random_string" {
 }
 
 resource "azurerm_public_ip" "machine_public_ip" {
-  name = "reverse-proxy-virtual-machine-public-ip-${random_string.random_string.result}"
-  location = var.location
+  name                = "reverse-proxy-virtual-machine-public-ip-${random_string.random_string.result}"
+  location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
