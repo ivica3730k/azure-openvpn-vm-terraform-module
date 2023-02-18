@@ -13,19 +13,42 @@ resource "azurerm_subnet" "default-subnet" {
   address_prefixes     = ["10.0.0.0/16"]
 }
 
-module "openvpn-vm-machine" {
-  source                             = "./modules/openvpn-vm-machine"
-  resource_group_name                = azurerm_resource_group.rg.name
-  resource_group_location            = azurerm_resource_group.rg.location
-  subnet_id                          = azurerm_subnet.default-subnet.id
-  ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
-  users                              = ["ivicamatic-laptop", "ivicamatic-desktop", "ivicamatic-mobile"]
+# module "openvpn-vm-machine" {
+#   source                             = "./modules/openvpn-vm-machine"
+#   resource_group_name                = azurerm_resource_group.rg.name
+#   location            = azurerm_resource_group.rg.location
+#   subnet_id                          = azurerm_subnet.default-subnet.id
+#   ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
+#   users                              = ["ivicamatic-laptop", "ivicamatic-desktop", "ivicamatic-mobile"]
+# }
+
+# output "openvpn-machine-ip" {
+#   value = module.openvpn-vm-machine.virtual_machine_public_ip
+# }
+
+
+module "reverse-proxy-machine" {
+  source              = "./modules/vm-reverse-proxy"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  subnet_id           = azurerm_subnet.default-subnet.id
+  reverse_proxy_entries = [
+    {
+      name               = "test"
+      domain_name        = "test.ivica-matic.com"
+      backend_ip_address = "localhost"
+      backend_port       = 80
+      letsencrypt_email  = "ivica-matic@outlook.com"
+    }
+  ]
+
+}
+
+output "proxy-machine-ip" {
+  value = module.reverse-proxy-machine.virtual_machine_public_ip
 }
 
 
-output "openvpn-machine-ip" {
-  value = module.openvpn-vm-machine.openvpn_virtual_machine_public_ip
-}
 
 
 resource "azurerm_network_security_group" "default-security-group" {
@@ -56,7 +79,30 @@ resource "azurerm_network_security_group" "default-security-group" {
     source_address_prefix      = "Internet"
     source_port_range          = "*"
   }
-
+  # allow http
+  security_rule {
+    access                     = "Allow"
+    destination_address_prefix = "*"
+    destination_port_range     = "80"
+    direction                  = "Inbound"
+    name                       = "AllowTagCustom80Inbound"
+    priority                   = "103"
+    protocol                   = "Tcp"
+    source_address_prefix      = "Internet"
+    source_port_range          = "*"
+  }
+  # allow https
+  security_rule {
+    access                     = "Allow"
+    destination_address_prefix = "*"
+    destination_port_range     = "443"
+    direction                  = "Inbound"
+    name                       = "AllowTagCustom443Inbound"
+    priority                   = "104"
+    protocol                   = "Tcp"
+    source_address_prefix      = "Internet"
+    source_port_range          = "*"
+  }
 }
 
 # associate the security group with the default subnet

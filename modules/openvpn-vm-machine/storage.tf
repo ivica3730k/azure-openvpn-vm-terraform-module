@@ -1,6 +1,6 @@
 resource "azurerm_storage_account" "ovpn_profiles_storage_account" {
   name                     = var.ovpn_profiles_storage_account_name
-  location                 = var.resource_group_location
+  location                 = var.location
   resource_group_name      = var.resource_group_name
   access_tier              = "Cool"
   account_kind             = "StorageV2"

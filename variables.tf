@@ -4,13 +4,13 @@ variable "environment" {
 }
 
 variable "resource_group_name" {
-  default     = "ivicamaticrg"
+  default     = "ivicamaticrg2"
   description = "Details of the resource group"
   sensitive   = false
 }
 
 
-variable "resource_group_location" {
+variable "location" {
   default     = "uksouth"
   description = "Details of the resource group"
   sensitive   = false

@@ -4,17 +4,17 @@ resource "random_string" "random_string" {
 }
 
 resource "azurerm_public_ip" "machine_public_ip" {
-  name = "openvpn-machine-public-ip-${random_string.random_string.result}"
-  # location            = azurerm_resource_group.rg.location
+  name = "reverse-proxy-virtual-machine-public-ip-${random_string.random_string.result}"
   location = var.location
-  #resource_group_name = azurerm_resource_group.rg.name
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
+
+
 resource "azurerm_network_interface" "machine_nic" {
-  name                = "openvn-virtual-machine-nic-${random_string.random_string.result}"
+  name                = "reverse-proxy-machine-nic-${random_string.random_string.result}"
   location            = var.location
   resource_group_name = var.resource_group_name
   # enable_accelerated_networking = "true"
@@ -31,13 +31,13 @@ resource "azurerm_linux_virtual_machine" "virtual_machine" {
   # TODO: OpenVPN should be installed on this machine and user profile should be created
   admin_username                  = "azureuser"
   allow_extension_operations      = "true"
-  computer_name                   = "openvn-virtual-machine-${random_string.random_string.result}"
+  computer_name                   = "reverse-proxy-virtual-machine-${random_string.random_string.result}"
   disable_password_authentication = "true"
   encryption_at_host_enabled      = "false"
   extensions_time_budget          = "PT1H30M"
   location                        = var.location
   max_bid_price                   = "-1"
-  name                            = "openvn-virtual-machine-${random_string.random_string.result}"
+  name                            = "reverse-proxy-virtual-machine-${random_string.random_string.result}"
   network_interface_ids           = [azurerm_network_interface.machine_nic.id]
   priority                        = "Regular"
   provision_vm_agent              = "true"
@@ -74,14 +74,11 @@ resource "azurerm_linux_virtual_machine" "virtual_machine" {
   vtpm_enabled = "false"
   custom_data  = data.template_cloudinit_config.virtual_machine_init.rendered
 
-  depends_on = [
-    azurerm_storage_account.ovpn_profiles_storage_account,
-    azurerm_storage_container.ovpn_profiles_storage_container
-  ]
+
 }
 
 # output the public IP address of the VM
 output "virtual_machine_public_ip" {
-  description = "IP address of the OpenVPN VM"
+  description = "IP address of the Reverse Proxy VM"
   value       = azurerm_linux_virtual_machine.virtual_machine.public_ip_address
 }

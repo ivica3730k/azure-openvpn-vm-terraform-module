@@ -1,4 +1,4 @@
-data "template_cloudinit_config" "openvpn_virtual_machine_init" {
+data "template_cloudinit_config" "virtual_machine_init" {
   gzip          = false
   base64_encode = true
 
