@@ -13,19 +13,27 @@ resource "azurerm_subnet" "default-subnet" {
   address_prefixes     = ["10.0.0.0/16"]
 }
 
-# module "openvpn-vm-machine" {
-#   source                             = "./modules/openvpn-vm-machine"
-#   resource_group_name                = azurerm_resource_group.rg.name
-#   location            = azurerm_resource_group.rg.location
-#   subnet_id                          = azurerm_subnet.default-subnet.id
-#   ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
-#   users                              = ["ivicamatic-laptop", "ivicamatic-desktop", "ivicamatic-mobile"]
-# }
+module "openvpn-vm-machine" {
+  source                             = "./modules/openvpn-vm-machine"
+  resource_group_name                = azurerm_resource_group.rg.name
+  location                           = azurerm_resource_group.rg.location
+  subnet_id                          = azurerm_subnet.default-subnet.id
+  ovpn_profiles_storage_account_name = "ovpnprofilesivicamatic"
+  users                              = ["ivicamatic-laptop", "ivicamatic-desktop", "ivicamatic-mobile"]
+}
 
-# output "openvpn-machine-ip" {
-#   value = module.openvpn-vm-machine.virtual_machine_public_ip
-# }
+output "openvpn-machine-ip" {
+  value = module.openvpn-vm-machine.virtual_machine_public_ip
+}
 
+resource "cloudflare_record" "openvpn_machine_a_record" {
+  zone_id = var.cloudflare_zone_id
+  name    = "vpn"
+  value   = module.openvpn-vm-machine.virtual_machine_public_ip
+  type    = "A"
+  ttl     = 1
+  proxied = true
+}
 
 module "reverse-proxy-machine" {
   source              = "./modules/vm-reverse-proxy"
