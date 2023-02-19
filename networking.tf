@@ -34,8 +34,8 @@ module "reverse-proxy-machine" {
   subnet_id           = azurerm_subnet.default-subnet.id
   reverse_proxy_entries = [
     {
-      name               = "test"
-      domain_name        = "test.ivica-matic.com"
+      name               = "test123"
+      domain_name        = "test123.ivica-matic.com"
       backend_ip_address = "localhost"
       backend_port       = 80
       letsencrypt_email  = "ivica-matic@outlook.com"
@@ -50,7 +50,7 @@ output "proxy-machine-ip" {
 
 resource "cloudflare_record" "proxy_machine_a_record" {
   zone_id = var.cloudflare_zone_id
-  name    = "test"
+  name    = "test123"
   value   = module.reverse-proxy-machine.virtual_machine_public_ip
   type    = "A"
   ttl     = 1

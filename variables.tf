@@ -16,8 +16,28 @@ variable "location" {
   sensitive   = false
 }
 
-variable "cloudflare_api_token" {
+variable "client_id" {
   default = ""
+}
+
+variable "client_secret" {
+  default   = ""
+  sensitive = true
+}
+
+variable "tenant_id" {
+  default = ""
+}
+
+
+variable "subscription_id" {
+  default = ""
+}
+
+
+variable "cloudflare_api_token" {
+  default   = ""
+  sensitive = true
 }
 
 variable "cloudflare_zone_id" {
