@@ -32,7 +32,7 @@ resource "cloudflare_record" "openvpn_machine_a_record" {
   value   = module.openvpn-vm-machine.virtual_machine_public_ip
   type    = "A"
   ttl     = 1
-  proxied = true
+  proxied = false
 }
 
 module "reverse-proxy-machine" {
@@ -42,8 +42,8 @@ module "reverse-proxy-machine" {
   subnet_id           = azurerm_subnet.default-subnet.id
   reverse_proxy_entries = [
     {
-      name               = "test123"
-      domain_name        = "test123.ivica-matic.com"
+      name               = "xyz"
+      domain_name        = "xyz.ivica-matic.com"
       backend_ip_address = "localhost"
       backend_port       = 80
       letsencrypt_email  = "ivica-matic@outlook.com"
@@ -58,7 +58,7 @@ output "proxy-machine-ip" {
 
 resource "cloudflare_record" "proxy_machine_a_record" {
   zone_id = var.cloudflare_zone_id
-  name    = "test123"
+  name    = "xyz"
   value   = module.reverse-proxy-machine.virtual_machine_public_ip
   type    = "A"
   ttl     = 1
@@ -84,18 +84,18 @@ resource "azurerm_network_security_group" "default-security-group" {
     source_address_prefix      = "Internet"
     source_port_range          = "*"
   }
-  # allow ssh
-  security_rule {
-    access                     = "Allow"
-    destination_address_prefix = "*"
-    destination_port_range     = "22"
-    direction                  = "Inbound"
-    name                       = "AllowTagCustom22Inbound"
-    priority                   = "102"
-    protocol                   = "Tcp"
-    source_address_prefix      = "Internet"
-    source_port_range          = "*"
-  }
+  # allow ssh - not needed, we can use our vpn to connect to the machine
+  # security_rule {
+  #   access                     = "Allow"
+  #   destination_address_prefix = "*"
+  #   destination_port_range     = "22"
+  #   direction                  = "Inbound"
+  #   name                       = "AllowTagCustom22Inbound"
+  #   priority                   = "102"
+  #   protocol                   = "Tcp"
+  #   source_address_prefix      = "Internet"
+  #   source_port_range          = "*"
+  # }
   # allow http
   security_rule {
     access                     = "Allow"
